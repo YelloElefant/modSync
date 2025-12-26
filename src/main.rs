@@ -13,10 +13,15 @@ use dirs::data_dir;
 async fn main() -> Result<()> {
     // 1) Config (hardcode first, then turn into CLI flags later)
     let mods_dir = data_dir()
-    .context("Could not find AppData directory")?
-    .join(".minecraft")
-    .join("mods");
+    .context("Could not find AppData directory")?;
 
+    // check if mac or linux and adjust path accordingly
+    #[cfg(target_os = "windows")]
+    let mods_dir = mods_dir.join(".minecraft").join("mods");
+    #[cfg(target_os = "macos")]
+    let mods_dir = mods_dir.join("Library").join("Application Support").join("minecraft").join("mods");
+    #[cfg(target_os = "linux")]
+    let mods_dir = mods_dir.join(".minecraft").join("mods");
 
     // 3) Scan local mods and hash them
     let local = scan_mods_dir(&mods_dir)?;    
