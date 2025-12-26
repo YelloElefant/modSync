@@ -1,29 +1,39 @@
-name: Build binaries
+name: Build
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
-
+  build-macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Build (release)
-        run: cargo build --release
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
         with:
-          name: modsync-${{ matrix.os }}
-          path: |
-            target/release/modsync*
-            target/release/*.exe
+          name: modSync-macos
+          path: target/release/modSync
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: modSync-windows
+          path: target/release/modSync.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: modSync-linux
+          path: target/release/modSync
